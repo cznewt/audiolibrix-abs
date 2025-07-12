@@ -1,13 +1,13 @@
 ---
 services:
-  audioteka-abs:
-    image: ghcr.io/cznewt/audioteka-abs:main
+  audiolibrix-abs:
+    image: ghcr.io/cznewt/audiolibrix-abs:main
     environment:
       - LANGUAGE=cz
-      - ADD_AUDIOTEKA_LINK_TO_DESCRIPTION=true # Set to false to hide the Audioteka link in the description
+      - ADD_AUDIOLIBRIX_LINK_TO_DESCRIPTION=true # Set to false to hide the Audiolibrix link in the description
     restart: unless-stopped
     ports:
-      - "3001:3001"
+      - "3002:3002"
   audiobookshelf:
     image: ghcr.io/advplyr/audiobookshelf:latest
     ports:
