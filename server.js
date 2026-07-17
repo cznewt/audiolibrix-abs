@@ -22,8 +22,10 @@ const lang = LANGUAGES[language] || LANGUAGES.cs;
 const BASE_URL = 'https://www.audiolibrix.com';
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-// How many search hits to enrich with a detail-page fetch (bounds outgoing requests).
-const MAX_DETAILS = 12;
+// Audiobookshelf aborts custom-provider searches after 10s, so only fetch detail
+// pages for the top few hits; the rest are returned with search-tile data only.
+const MAX_DETAILS = 8;
+const DETAIL_TIMEOUT = 6000;
 
 app.use(cors());
 
@@ -89,10 +91,12 @@ class AudiolibrixProvider {
 
     console.log('Number of books found:', matches.length);
 
+    // Enrich only the top hits with detail-page metadata (bounded time); return
+    // the remaining hits with search-tile data so they still show up.
     const enriched = await Promise.all(
       matches.slice(0, MAX_DETAILS).map((match) => this.getFullMetadata(match))
     );
-    return { matches: enriched };
+    return { matches: [...enriched, ...matches.slice(MAX_DETAILS)] };
   }
 
   async getFullMetadata(match) {
@@ -100,7 +104,7 @@ class AudiolibrixProvider {
       console.log(`Fetching full metadata for: ${match.title}`);
       const response = await axios.get(match.url, {
         headers: { 'User-Agent': USER_AGENT, 'Accept-Language': lang.accept },
-        timeout: 30000,
+        timeout: DETAIL_TIMEOUT,
       });
       const $ = cheerio.load(response.data);
 
