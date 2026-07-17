@@ -3,7 +3,7 @@ services:
   audiolibrix-abs:
     image: ghcr.io/cznewt/audiolibrix-abs:main
     environment:
-      - LANGUAGE=cz
+      - LANGUAGE=cs # For Slovak users change to - LANGUAGE=sk
       - ADD_AUDIOLIBRIX_LINK_TO_DESCRIPTION=true # Set to false to hide the Audiolibrix link in the description
     restart: unless-stopped
     ports:
